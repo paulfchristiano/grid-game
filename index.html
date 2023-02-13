@@ -1,0 +1,124 @@
+<html>
+    <head>
+        <script type="text/javascript" src="main.js"></script>
+
+        <title>Grid</title>
+    </head>
+    <style>
+        .tooltip {
+          position: relative;
+          display: inline-block;
+          cursor: pointer;
+        }
+        
+        .tooltip .tooltiptext {
+          visibility: hidden;
+          width: 240px;
+          background-color: black;
+          color: #fff;
+          text-align: center;
+          border-radius: 6px;
+          padding: 5px;
+        
+          /* Position the tooltip */
+          position: absolute;
+          z-index: 1;
+          top: -5px;
+          left: 105%;
+        }
+        
+        .tooltip:hover .tooltiptext {
+          visibility: visible;
+        }
+        </style>
+        
+    <body>
+        <div style='display:flex'>
+            <div style='flex:50%'>
+                <canvas id="canvas" width="100%" height="100%"></canvas>
+            </div>
+            <div style='flex:50%; font-size:1.5em; margin-top:1em;'>
+                <div id='info'>
+                    <div style='margin-top:1em;'>
+                    Time: <span id='time'></span>
+                    </div>
+                    <div style='margin-top:1em;'>
+                        Wins: <span id='wins'></span> / <span id='games'></span> <span id='winrate'></span>
+                    </div>
+                    <div style='margin-top:1em;'>
+                        Average time: <span id='average'></span>
+                    </div>
+                    <div style='margin-top:1em; height:1em'>
+                        <span id='continue'></span>
+                    </div>
+                </div>
+                <!--
+                <div> &nbsp; </div> 
+                <div id='controls' style='font-size:1em'>
+                    <div> Grid size:
+                        <input type='radio' name='gridsize' value='5'> 5
+                        <input type='radio' name='gridsize' value='6'> 6 
+                        <input type='radio' name='gridsize' value='7'> 7
+                        <input type='radio' name='gridsize' value='8'> 8
+                        <input type='radio' name='gridsize' value='9'> 9
+                    </div>
+                    <div> Use timer: <input type='checkbox' name='usetimer'> </div>
+                    <div> Timer length:
+                        <input type='radio' name='timelimit' value='15'> 15s
+                        <input type='radio' name='timelimit' value='30'> 30s
+                        <input type='radio' name='timelimit' value='60'> 60s
+                        <input type='radio' name='timelimit' value='120'> 120s
+                        <input type='radio' name='timelimit' value='240'> 240s
+                    </div>
+                    <div> Squares and diamonds<div class='tooltip'><sup>?</sup>
+                        <span class='tooltiptext'>
+                            The path must go straight through each square,
+                            and turn at a right angle at each diamond.
+                        </span>
+                    </div>:
+                        <input type='radio' name='squares' value='0'> None
+                        <input type='radio' name='squares' value='1'> Normal
+                        <input type='radio' name='squares' value='2'> Extra
+                    </div>
+                    <div> Numbers<div class='tooltip'><sup>?</sup>
+                        <span class='tooltiptext'>
+                            Numbers indicate the number of segments of the path
+                            that must be adjacent to each square.
+                        </span>
+                    </div>:
+                        <input type='radio' name='numbers' value='0'> None
+                        <input type='radio' name='numbers' value='1'> Normal
+                        <input type='radio' name='numbers' value='2'> Extra
+                    </div>
+                    <div> Circles<div class='tooltip'><sup>?</sup>
+                        <span class='tooltiptext'>
+                            The path must include at least one segment next
+                            to each oriented circle, traveling in the same direction
+                            as the arrows on the circle.
+                        </span>
+                    </div>:
+                        <input type='radio' name='rotates' value='0'> None
+                        <input type='radio' name='rotates' value='1'> Normal
+                        <input type='radio' name='rotates' value='2'> Extra
+                    </div>
+                    <div> &nbsp; </div>
+                    <div> Load settings: </div> 
+                    <div>
+                        <button onclick='settingsToUI(defaultSettings); $("#button1").blur()' id=button1 style='font-weight:bold'>Default</button>
+                        <button onclick='settingsToUI(longSettings); $("#button2").blur()' id=button2>Long</button>
+                        <button onclick='settingsToUI(quickSettings); $("#button3").blur()' id=button3>Quick</button>
+                        <button onclick='settingsToUI(franticSettings); $("#button4").blur()' id=button4>Frantic</button>
+                    </div>
+                    <div> &nbsp; </div> 
+                    <div> <button onclick='setSettings(settingsFromUI()); reset(); $("#applybutton").blur()' id=applybutton>Apply changes and reset</button>
+                    <button onclick='settingsToUI(settings); $("#revertbutton").blur()' id=revertbutton>Revert changes</button> </div>
+                    <div> <span style='color:red' id='changewarning'></span> </div>
+                    <div> &nbsp; </div>
+                                        !-->
+                    <div style='margin-top:1em;'> <span id='highscore'></span></div>
+                    <div style='margin-top:1em'> <span id='speedscore'></span></div>
+                </div>
+            </div>
+        <div>
+    </body>
+</html>
