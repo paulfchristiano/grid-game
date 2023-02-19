@@ -190,7 +190,20 @@ function adjacentSegments(line, target) {
     }
     return count;
 }
+// Get image data and return the number of filled pixels
+function countPixels(ctx) {
+    var data = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height).data;
+    var count = 0;
+    for (var i = 0; i < data.length; i += 4) {
+        if (data[i] !== 0) {
+            count += 1;
+        }
+    }
+    return count;
+}
 //TODO: probably these should be triangles?
+var numbersRender = true;
+var numbersChecked = false;
 var EdgeNumber = /** @class */ (function (_super) {
     __extends(EdgeNumber, _super);
     function EdgeNumber(x, y, number) {
@@ -200,13 +213,32 @@ var EdgeNumber = /** @class */ (function (_super) {
     }
     EdgeNumber.prototype.draw = function (ctx, satisfied) {
         var scale = 0.1; // TODO: fix
-        ctx.strokeStyle = color(satisfied);
-        ctx.fillStyle = color(satisfied);
-        ctx.lineWidth = 0.01;
-        ctx.font = 'bold 0.3px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(this.number.toString(), this.x, this.y);
+        if (numbersRender) {
+            ctx.strokeStyle = color(satisfied);
+            ctx.fillStyle = color(satisfied);
+            ctx.lineWidth = 0.01;
+            ctx.font = 'bold 0.3px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            var pixelsFilled = (numbersChecked) ? 0 : countPixels(ctx);
+            var a = ctx.getImageData(0, 0, 1, 1);
+            ctx.fillText(this.number.toString(), this.x, this.y);
+            if (!numbersChecked) {
+                numbersRender = countPixels(ctx) > pixelsFilled;
+                numbersChecked = true;
+            }
+        }
+        if (!numbersRender) {
+            var top_1 = this.y + 0.03 - (this.number / 2) * scale;
+            for (var i = 0; i < this.number; i++) {
+                ctx.strokeStyle = color(satisfied);
+                ctx.lineWidth = 0.03;
+                ctx.beginPath();
+                ctx.moveTo(this.x - 1.5 * scale, top_1 + i * scale);
+                ctx.lineTo(this.x + 1.5 * scale, top_1 + i * scale);
+                ctx.stroke();
+            }
+        }
     };
     EdgeNumber.prototype.block = function (g, target) {
         return (bothAdjacent(target, last(g.line), [this.x, this.y]) && adjacentSegments(g.line, [this.x, this.y]) >= this.number);
