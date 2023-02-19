@@ -48,75 +48,29 @@
                     <div style='margin-top:1em;'>
                         Average time: <span id='average'></span>
                     </div>
-                    <div style='margin-top:1em; height:1em'>
+                    <div style='margin-top:1em; height:1em; color:green; font-weight:bold'>
                         <span id='continue'></span>
                     </div>
                 </div>
-                <!--
-                <div> &nbsp; </div> 
-                <div id='controls' style='font-size:1em'>
-                    <div> Grid size:
-                        <input type='radio' name='gridsize' value='5'> 5
-                        <input type='radio' name='gridsize' value='6'> 6 
-                        <input type='radio' name='gridsize' value='7'> 7
-                        <input type='radio' name='gridsize' value='8'> 8
-                        <input type='radio' name='gridsize' value='9'> 9
-                    </div>
-                    <div> Use timer: <input type='checkbox' name='usetimer'> </div>
-                    <div> Timer length:
-                        <input type='radio' name='timelimit' value='15'> 15s
-                        <input type='radio' name='timelimit' value='30'> 30s
-                        <input type='radio' name='timelimit' value='60'> 60s
-                        <input type='radio' name='timelimit' value='120'> 120s
-                        <input type='radio' name='timelimit' value='240'> 240s
-                    </div>
-                    <div> Squares and diamonds<div class='tooltip'><sup>?</sup>
-                        <span class='tooltiptext'>
-                            The path must go straight through each square,
-                            and turn at a right angle at each diamond.
-                        </span>
-                    </div>:
-                        <input type='radio' name='squares' value='0'> None
-                        <input type='radio' name='squares' value='1'> Normal
-                        <input type='radio' name='squares' value='2'> Extra
-                    </div>
-                    <div> Numbers<div class='tooltip'><sup>?</sup>
-                        <span class='tooltiptext'>
-                            Numbers indicate the number of segments of the path
-                            that must be adjacent to each square.
-                        </span>
-                    </div>:
-                        <input type='radio' name='numbers' value='0'> None
-                        <input type='radio' name='numbers' value='1'> Normal
-                        <input type='radio' name='numbers' value='2'> Extra
-                    </div>
-                    <div> Circles<div class='tooltip'><sup>?</sup>
-                        <span class='tooltiptext'>
-                            The path must include at least one segment next
-                            to each oriented circle, traveling in the same direction
-                            as the arrows on the circle.
-                        </span>
-                    </div>:
-                        <input type='radio' name='rotates' value='0'> None
-                        <input type='radio' name='rotates' value='1'> Normal
-                        <input type='radio' name='rotates' value='2'> Extra
-                    </div>
-                    <div> &nbsp; </div>
-                    <div> Load settings: </div> 
-                    <div>
-                        <button onclick='settingsToUI(defaultSettings); $("#button1").blur()' id=button1 style='font-weight:bold'>Default</button>
-                        <button onclick='settingsToUI(longSettings); $("#button2").blur()' id=button2>Long</button>
-                        <button onclick='settingsToUI(quickSettings); $("#button3").blur()' id=button3>Quick</button>
-                        <button onclick='settingsToUI(franticSettings); $("#button4").blur()' id=button4>Frantic</button>
-                    </div>
-                    <div> &nbsp; </div> 
-                    <div> <button onclick='setSettings(settingsFromUI()); reset(); $("#applybutton").blur()' id=applybutton>Apply changes and reset</button>
-                    <button onclick='settingsToUI(settings); $("#revertbutton").blur()' id=revertbutton>Revert changes</button> </div>
-                    <div> <span style='color:red' id='changewarning'></span> </div>
-                    <div> &nbsp; </div>
-                                        !-->
                     <div style='margin-top:1em;'> <span id='highscore'></span></div>
                     <div style='margin-top:1em'> <span id='speedscore'></span></div>
+                    <div style='margin-top:1em'>  <button id='reset'>Reset score</button> </div>
+                    <div style='margin-top:1em'>  <button id='instructionsButton'>Instructions</button> </div>
+                    <div style='margin-top:1em; display:none' id='instructions'> 
+                        <ul>
+                            <li> Use arrow keys to select a path from the left to right of the grid. </li>
+                            <li> The path must go straight through each square, and turn 90 degrees at each diamond. </li>
+                            <li> For each number, the path must traverse exactly that many of the adjacent edges.</li>
+                            <li> For each cycle, the path must traverse an adjacent edge in the indicated orientation. </li>
+                            <li> A symbol will block illegal moves, and turn black once it is satisfied.</li>
+                            <li> The goal on the right side will turn black once all symbols are satisfied. </li>
+                            <li> After finishing a level, press enter or space to move onto the next level. </li>
+                            <li> You can undo a move by pressing 'z' or retracing your steps. </li>
+                            <li> You can restart the level by pressing space. This leaves the old path as a grey shadow.</li>
+                            <li> You can retrace your old steps by pressing 'x' when you are on the grey shadow. </li>
+                            <li> This is a helpful way to modify the beginning of a trajectory. </li>
+                            <li> Your personal best score is computed as the bottom of a confidence interval. </li>
+                    </div>
                 </div>
             </div>
         <div>

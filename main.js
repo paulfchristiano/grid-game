@@ -1,9 +1,6 @@
 // TODO:
-// Copy stuff from anagrams:
-//  - Add radio buttons for time, size, and elements
-//  - Add score saving and personal bests
-//  - Simple instructions with mouseover
-// Add "gaps"
+// Visually indicate when you win
+// Add a game as a loss if you quit midway
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -480,13 +477,26 @@ function heartbeat(state) {
     }
 }
 var allKeys = ['time', 'winrate'];
+function saveLast(score) {
+    localStorage.setItem('last', JSON.stringify(score));
+}
+function getLast() {
+    var score = localStorage.getItem('last');
+    if (score !== null) {
+        var result = JSON.parse(score);
+        if (isGameOpen())
+            result.games += 1;
+        return result;
+    }
+    else {
+        return { games: 0, wins: 0, totalTime: 0 };
+    }
+}
 // Serialize the value of score into local storage 
 function saveScore(score, key) {
-    console.log('!');
     localStorage.setItem(key, JSON.stringify(score));
 }
 function getScore(key) {
-    console.log('?');
     var score = localStorage.getItem(key);
     if (score !== null) {
         return JSON.parse(score);
@@ -513,7 +523,18 @@ function scoreBy(key, score) {
         case 'winrate': return lowerBoundScore(score.wins, score.games);
     }
 }
-function recordHighScores(score) {
+function markGameDone() {
+    localStorage.setItem('gameState', 'closed');
+}
+function markGameOpen() {
+    localStorage.setItem('gameState', 'open');
+}
+function isGameOpen() {
+    return localStorage.getItem('gameState') === 'open';
+}
+function recordScore(score) {
+    saveLast(score);
+    markGameDone();
     for (var _i = 0, allKeys_1 = allKeys; _i < allKeys_1.length; _i++) {
         var key = allKeys_1[_i];
         var oldScore = getScore(key);
@@ -546,7 +567,7 @@ function drawInfo(state) {
     var e8 = document.getElementById('continue');
     if (e8 !== null) {
         if (state.paused)
-            e8.innerText = '(Enter to continue)';
+            e8.innerText = '(Space or Enter to start)';
         else
             e8.innerText = '';
     }
@@ -569,6 +590,9 @@ function drawInfo(state) {
 function init() {
     var _a = randomWidgets(7), widgets = _a[0], solution = _a[1];
     return { line: [[0, 3]], ghostLine: [], grid: { size: 7, widgets: widgets, target: [6, 3] }, solution: solution, widgetLookup: lookupForWidgets(widgets, 7) };
+}
+function emptyGame() {
+    return { line: [[0, 3]], ghostLine: [], grid: { size: 7, widgets: [], target: [6, 3] }, solution: [], widgetLookup: lookupForWidgets([], 7) };
 }
 function lookupForWidgets(widgets, size) {
     var result = [];
@@ -628,11 +652,13 @@ function executeAndAnimateMove(state, m) {
     var oldGame = state.game;
     var newGame = updateGame(state.game, m);
     animate(state.window, function (progress) {
-        if (!state.paused) {
+        if (!state.abortAnimation) {
             drawGameInWindow(state.window, state.canvas, oldGame, [m, newGame, progress]);
         }
     }, 100);
     state.game = newGame;
+    if (isVictory(state.game))
+        winGame(state, false);
 }
 function isVictory(g) {
     var _a = g.line[g.line.length - 1], x = _a[0], y = _a[1];
@@ -645,26 +671,40 @@ function isVictory(g) {
     return x === g.grid.target[0] && y === g.grid.target[1];
 }
 var gameTime = 60;
-function winGame(state) {
+function winGame(state, drawResult) {
     state.score.wins += 1;
     state.score.totalTime += gameTime - state.time;
     state.score.games += 1;
-    recordHighScores(state.score);
+    recordScore(state.score);
     state.paused = true;
-    draw(state);
+    if (drawResult) {
+        draw(state);
+        state.abortAnimation = true;
+    }
+    else
+        drawInfo(state);
 }
 function draw(state) {
     drawInfo(state);
     var gameToDraw = state.showSolution ? __assign(__assign({}, state.game), { line: state.game.solution }) : state.game;
     drawGameInWindow(state.window, state.canvas, gameToDraw);
 }
-function loseGame(state) {
+function loseGame(state, drawResult) {
+    if (drawResult === void 0) { drawResult = true; }
+    state.abortAnimation = false;
     state.score.games += 1;
     state.score.totalTime += gameTime;
     state.paused = true;
     state.showSolution = true;
+    recordScore(state.score);
+    state.abortAnimation = true;
     state.game.ghostLine = [];
-    draw(state);
+    if (drawResult) {
+        draw(state);
+        state.abortAnimation = true;
+    }
+    else
+        drawInfo(state);
 }
 function startGame(state) {
     state.paused = false;
@@ -672,23 +712,43 @@ function startGame(state) {
     state.game.ghostLine = [];
     state.game = init();
     state.time = gameTime;
+    state.abortAnimation = false;
+    markGameOpen();
     draw(state);
+}
+function resetScore(state) {
+    state.score = { games: 0, wins: 0, totalTime: 0 };
+    recordScore(state.score);
+    drawInfo(state);
 }
 document.addEventListener('DOMContentLoaded', function () {
     var window = document.defaultView;
     var canvas = document.getElementById('canvas');
     var state = {
-        game: init(),
-        score: { games: 0, totalTime: 0, wins: 0 },
+        game: emptyGame(),
+        score: getLast(),
         time: gameTime,
         window: window,
+        abortAnimation: false,
         showSolution: false,
         canvas: canvas,
-        paused: false
+        paused: true
     };
     draw(state);
     window.addEventListener('resize', function () { return draw(state); });
     setInterval(function () { return heartbeat(state); }, 1000);
+    var button = document.getElementById('reset');
+    button.addEventListener('click', function () { return resetScore(state); });
+    var instructionBotton = document.getElementById('instructionsButton');
+    instructionBotton.addEventListener('click', function () {
+        var instructions = document.getElementById('instructions');
+        if (instructions.style.display === 'none') {
+            instructions.style.display = 'block';
+        }
+        else {
+            instructions.style.display = 'none';
+        }
+    });
     document.addEventListener('keydown', function (event) {
         var doDiff = function (dx, dy) { return executeAndAnimateMove(state, deltaToMove(state.game, [dx, dy])); };
         console.log("Keydown!", state.paused, state.showSolution);
@@ -716,20 +776,22 @@ document.addEventListener('DOMContentLoaded', function () {
         else if (event.key == 'Enter') {
             if (state.paused)
                 startGame(state);
-            else if (isVictory(state.game))
-                winGame(state);
             event.preventDefault();
         }
         else if (event.key == 'Escape') {
             loseGame(state);
         }
-        else if (event.key == ' ') {
+        else if (event.key == ' ' && !state.paused) {
             state.game.ghostLine = state.game.line;
             state.game.line = [[0, 3]];
             draw(state);
             event.preventDefault();
         }
-        else if (event.key == 'x') {
+        else if (event.key == ' ' && state.paused) {
+            startGame(state);
+            event.preventDefault();
+        }
+        else if (event.key == 'x' && !state.paused) {
             if (state.game.ghostLine.length > 0) {
                 var current = last(state.game.line);
                 for (var i = 0; i < state.game.ghostLine.length - 1; i++) {
